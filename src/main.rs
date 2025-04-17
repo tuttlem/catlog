@@ -1,23 +1,19 @@
 mod db;
 
-use crate::db::entry::EntryType;
+use crate::db::{Engine, EntryType};
+use crate::db::entry::DecodeError;
 use crate::db::LogEntry;
+use crate::db::Segment;
 
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut engine = Engine::open("data").unwrap();
 
-fn main() {
-    let entry = LogEntry {
-        entry_type: EntryType::Put,
-        timestamp: 1680000000000,
-        key: "name".to_string(),
-        value: b"Bob".to_vec(),
-    };
+    for i in 1..1_000_000 {
+        let key = format!("{}", i);
+        let value = (i as u64).to_le_bytes().to_vec();
 
-    let bytes = entry.encode();
+        engine.put(key, value)?;
+    }
 
-    println!("{:x?}", bytes); // Debug-print hex view
-
-    let entry_2 = LogEntry::decode(&bytes).unwrap();
-
-    println!("{:?}", entry_2);
-    println!("{}", entry_2.value_as_string().unwrap());
+    Ok(())
 }
