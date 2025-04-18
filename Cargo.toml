@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 crc32fast = "1.3"
+rand = "0.9.1"
